@@ -7,9 +7,6 @@ class YinshSimulator(GameSimulator):
 
     def __init__(self, player1: YinshPlayer, player2: YinshPlayer):
         super(YinshSimulator, self).__init__([player1, player2])
-        """
-        the number of rows and cols from the yinsh grid
-        """
 
 
     def init_game(self):

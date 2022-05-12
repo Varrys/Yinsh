@@ -11,8 +11,7 @@ class bcolors:
     blue = '\033[34m'
     cyan = '\033[36m'
     pink = '\033[35m'
-    yellow = '\033[33m'2
-
+    yellow = '\033[33m'
     black = '\033[30m'
     white = '\033[1;97m'
     grey = '\033[1;37m'
@@ -71,7 +70,7 @@ class YinshState(State):
         self.lastActionPos = tuple()
 
         self.jogadaInvalida = False
-
+        #aqui
     def __check_winner(self, player):
         """# check for 4 up and down
         for row in range(0, 19):
@@ -100,8 +99,6 @@ class YinshState(State):
                         self.__grid[row + 3][col + 3] == player:
                     return True
 """
-
-
         return False
 
     def get_grid(self):
@@ -131,12 +128,12 @@ class YinshState(State):
         row = action.get_row()
         print(f"row: {row}")
 
-        if len(self.lastActionPos)==2:
+        if len(self.lastActionPos) == 2:
             lastCol,lastRow=self.lastActionPos
         value = self.__grid[row][col]
         print(value)
         if value==-1:
-            self.jogadaInvalida=True
+            self.jogadaInvalida = True
         else:
             # drop the checker
             if self.duplaJogada:
@@ -147,10 +144,12 @@ class YinshState(State):
             else:
                 if value == 0:
                     self.__grid[row][col] = self.__acting_player
-                elif value > 0:
+                elif value > 0 and value == self.__acting_player:
                     if value == 1 or value == 2:
                         self.duplaJogada = True
                         self.__grid[row][col] = self.__grid[row][col] + 2
+                else:
+                    self.__acting_player = 1 if self.__acting_player == 2 else 2
 
         if not self.duplaJogada and not self.jogadaInvalida:
             # determine if there is a winner
@@ -160,14 +159,14 @@ class YinshState(State):
 
             self.__turns_count += 1
 
-        self.lastActionPos=(col,row)
+        self.lastActionPos = (col,row)
 
     def __display_cell(self, row, col):
 
         # 0-Locais de jogo | #1- Jogador A | #2- Jogador B | #3- Peça Selecionada A | #4- Peça Selecionada B |
         ##- Locais permitidos para jogar | #5- Peça fixa do jogador A | #6- Peça fixa do jogador B
         print({
-                  0: bcolors.white + '∙' + bcolors.RESET,
+                  0: bcolors.white + '◦' + bcolors.RESET,
                   1: bcolors.blue + '◯' + bcolors.RESET,
                   2: bcolors.red + '◯' + bcolors.RESET,
                   3: bcolors.blue + '◉' + bcolors.RESET,
