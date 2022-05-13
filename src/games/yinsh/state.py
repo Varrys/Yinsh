@@ -35,9 +35,9 @@ class YinshState(State):
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
             [-1, -1, 0, -1, 0, -1, 0, -1, 0, -1, -1],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
-            [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
+            [1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 0],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
-            [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
+            [2, -1, 2, -1, 2, -1, 2, -1, 2, -1, 0],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
             [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
@@ -52,8 +52,9 @@ class YinshState(State):
 
         """
         counts the number of turns in the current game
+        começava a 12..
         """
-        self.__turns_count = 2
+        self.__turns_count = 12
 
         """
         the index of the current acting player
@@ -67,10 +68,10 @@ class YinshState(State):
 
         self.duplaJogada = False
 
-        self.lastActionPos = tuple()
+        self.lastActionPos = (8, 8)
 
-        self.jogadaInvalida = False
-        #aqui
+        # aqui
+
     def __check_winner(self, player):
         """# check for 4 up and down
         for row in range(0, 19):
@@ -110,6 +111,7 @@ class YinshState(State):
     def validate_action(self, action: YinshAction) -> bool:
         col = action.get_col()
         row = action.get_row()
+        value = self.__grid[row][col]
 
         if col < 0 or col > 10:
             return False
@@ -117,9 +119,76 @@ class YinshState(State):
         if row < 0 or row > 18:
             return False
 
-        # full column
-        if self.__grid[row][col] == YinshState.EMPTY_CELL:
+        if value == YinshState.EMPTY_CELL:
             return False
+
+        # Impede de jogar onde existem peças, até terminar de colocar as 5º primeiras
+        if (value == 1 or value == 2) and self.__turns_count < 12:
+            return False
+
+        # Impende colocar uma peça numa cel vazia depois das 5/10 jogadas
+        if value == 0 and self.__turns_count > 11 and not self.duplaJogada:
+            return False
+
+        # Não deixa jogar onde já há jogadas e se tem uma peça selecionada
+        if value > 0 and self.duplaJogada:
+            return False
+
+        if self.__turns_count >= 12 and self.duplaJogada:
+            # Não deixa jogar na horizontal
+            lastRow, lastCol = self.lastActionPos
+            print(lastRow, row, self.duplaJogada)
+            if row == lastRow:
+                return False
+            rowDiff = abs(lastRow - row)
+            # Não deixa jogar entre as verticais e as diagonais
+            if row != lastRow and col not in [lastCol + rowDiff, lastCol - rowDiff, lastCol]:
+                return False
+
+            # Este pequeno codigo não deixa jogar numa posição se tiver peças 1/2 nessa vertical
+            print(col, lastCol)
+            if col == lastCol:
+                print("batatas")
+                if row > lastRow:
+                    for i in range(lastRow + 1, row + 1):
+                        print(i)
+                        valor = self.__grid[i][col]
+                        print(valor)
+                        if valor != self.__acting_player and 0 < valor < 5:
+                            print("arroz")
+                            return False
+                else:
+                    for i in reversed(range(row, lastRow)):
+                        valor = self.__grid[i][col]
+                        print(valor)
+                        if valor != self.__acting_player and 0 < valor < 5:
+                            print("massa")
+                            return False
+
+            # Este pequeno codigo não deixa jogar numa posição se tiver peças 1/2 nessa diagonal
+            if row > lastRow and col != lastCol:
+                for i in range(lastRow + 1, row + 1, ):
+                    rowDiff = abs(lastRow - i)
+                    playCol = lastCol + rowDiff if (lastCol - col) < 0 else lastCol - rowDiff
+                    print(i, playCol)
+                    valor = self.__grid[i][playCol]
+                    print(playCol)
+                    print("->", valor)
+                    if valor != self.__acting_player and valor != 0:
+                        print("aqui2")
+                        return False
+
+            elif row < lastRow and col != lastCol:
+                for i in reversed(range(row, lastRow, )):
+                    rowDiff = abs(lastRow - i)
+                    playCol = lastCol + rowDiff if (lastCol - col) < 0 else lastCol - rowDiff
+                    print(i, playCol)
+                    valor = self.__grid[i][playCol]
+                    print(playCol)
+                    print("->", valor)
+                    if valor != self.__acting_player and valor != 0:
+                        print("aqui3")
+                        return False
         return True
 
     def update(self, action: YinshAction):
@@ -129,29 +198,25 @@ class YinshState(State):
         print(f"row: {row}")
 
         if len(self.lastActionPos) == 2:
-            lastCol,lastRow=self.lastActionPos
+            lastRow, lastCol = self.lastActionPos
         value = self.__grid[row][col]
-        print(value)
-        if value==-1:
-            self.jogadaInvalida = True
-        else:
-            # drop the checker
-            if self.duplaJogada:
-                if value == 0:
-                    self.__grid[row][col] = self.__acting_player
-                self.__grid[lastRow][lastCol]+=2
-                self.duplaJogada = False
-            else:
-                if value == 0:
-                    self.__grid[row][col] = self.__acting_player
-                elif value > 0 and value == self.__acting_player:
-                    if value == 1 or value == 2:
-                        self.duplaJogada = True
-                        self.__grid[row][col] = self.__grid[row][col] + 2
-                else:
-                    self.__acting_player = 1 if self.__acting_player == 2 else 2
 
-        if not self.duplaJogada and not self.jogadaInvalida:
+        # drop the checker
+        if self.duplaJogada:
+            self.__grid[row][col] = self.__acting_player
+            self.__grid[lastRow][lastCol] += 2
+            self.duplaJogada = False
+        else:
+            if value == 0:
+                self.__grid[row][col] = self.__acting_player
+            elif value > 0 and value == self.__acting_player:
+                if value == 1 or value == 2:
+                    self.duplaJogada = True
+                    self.__grid[row][col] = self.__grid[row][col] + 2
+            else:
+                self.__acting_player = 1 if self.__acting_player == 2 else 2
+
+        if not self.duplaJogada:
             # determine if there is a winner
             self.__has_winner = self.__check_winner(self.__acting_player)
             # switch to next player
@@ -159,12 +224,13 @@ class YinshState(State):
 
             self.__turns_count += 1
 
-        self.lastActionPos = (col,row)
+        self.lastActionPos = (row, col)
 
     def __display_cell(self, row, col):
 
         # 0-Locais de jogo | #1- Jogador A | #2- Jogador B | #3- Peça Selecionada A | #4- Peça Selecionada B |
         ##- Locais permitidos para jogar | #5- Peça fixa do jogador A | #6- Peça fixa do jogador B
+        # print(row,col)
         print({
                   0: bcolors.white + '◦' + bcolors.RESET,
                   1: bcolors.blue + '◯' + bcolors.RESET,
@@ -176,7 +242,6 @@ class YinshState(State):
                   6: bcolors.red + '●' + bcolors.RESET,
                   YinshState.EMPTY_CELL: ' '
               }[self.__grid[row][col]], end="")
-
 
     def __display_numbers(self):
         print('   ', end="")
@@ -191,9 +256,7 @@ class YinshState(State):
         # for row in self.__grid:
         #    print(row)
         #    print('-'*100)
-        #print(self.jogadaInvalida)
-        if self.jogadaInvalida:
-            print(bcolors.red+"Jogada Inválida! Jogue Novamente!!"+bcolors.RESET)
+        # print(self.jogadaInvalida)
 
         for row in range(0, 19):
             if row < 10:
