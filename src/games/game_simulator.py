@@ -97,7 +97,7 @@ class GameSimulator(ABC):
     def run_simulation(self):
         state = self.init_game()
         players = self.get_player_positions()
-        print(players)
+        #print(players)
         # notify players a new game is starting
         for pos in range(0, len(players)):
             players[pos].set_current_pos(pos)

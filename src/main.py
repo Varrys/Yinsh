@@ -6,8 +6,13 @@ from src.games.yinsh.players.greedy import GreedyYinshPlayer
 from src.games.yinsh.players.human import HumanYinshPlayer
 
 
+class bcolors:
+    green = '\033[32m'
+    RESET = '\033[0m'
+
+
 def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
-    print(f"----- {desc} -----")
+    print(f"---------------- {bcolors.green + desc + bcolors.RESET} ----------------")
 
     for i in range(0, iterations):
         simulator.change_player_positions()
@@ -25,29 +30,19 @@ def main():
     c4_simulations = [
         # uncomment to play as human
         {
-            "name": "Yinsh - Human VS Human",
-            "player1": RandomYinshPlayer("Random"),
-            "player2": HumanYinshPlayer("Human")
+            "name": "Human VS Human",
+            "player1": HumanYinshPlayer("Human"),
+            "player2": HumanYinshPlayer("Human2")
         },
         # {
-        #    "name": "Yinsh - Random VS Random",
-        #    "player1": RandomYinshPlayer("Random 1"),
-        #    "player2": RandomYinshPlayer("Random 2")
+        #    "name": "Random VS Human",
+        #    "player1": RandomYinshPlayer("Random"),
+        #    "player2": HumanYinshPlayer("Human")
         # },
         # {
-        #    "name": "Yinsh - Greedy VS Random",
-        #    "player1": GreedyYinshPlayer("Greedy"),
-        #    "player2": RandomYinshPlayer("Random")
-        # },
-        # {
-        #    "name": "Minimax VS Random",
-        #    "player1": MinimaxYinshPlayer("Minimax"),
-        #    "player2": RandomYinshPlayer("Random")
-        # },
-        # {
-        #    "name": "Minimax VS Greedy",
-        #    "player1": MinimaxYinshPlayer("Minimax"),
-        #    "player2": GreedyYinshPlayer("Greedy")
+        #    "name": "Random VS Random2",
+        #    "player1": RandomYinshPlayer("Random"),
+        #    "player2": RandomYinshPlayer("Random2")
         # }
     ]
 
