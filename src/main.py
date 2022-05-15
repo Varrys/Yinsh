@@ -22,28 +22,34 @@ def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
 
 
 def main():
-    print(bcolors.BOLD+"               ESTG IA Yinsh Simulator"+bcolors.RESET)
-
+    global c4_simulations
+    print(bcolors.BOLD + "               ESTG IA Yinsh Simulator" + bcolors.RESET)
     num_iterations = 1
+    option = 0
+    print("1- Human vs Human")
+    print("2- Random vs Human")
+    print("3- Random vs Random2")
+    while option > 3 or option < 1:
+        option = int(input(f"Escolha o tipo de jogo: "))
 
-    c4_simulations = [
-        # uncomment to play as human
-        {
+    if option == 1:
+        c4_simulations = [{
             "name": "Human VS Human",
             "player1": HumanYinshPlayer("Human"),
             "player2": HumanYinshPlayer("Human2")
-        },
-        # {
-        #    "name": "Random VS Human",
-        #    "player1": RandomYinshPlayer("Random"),
-        #    "player2": HumanYinshPlayer("Human")
-        # },
-        # {
-        #    "name": "Random VS Random2",
-        #    "player1": RandomYinshPlayer("Random"),
-        #    "player2": RandomYinshPlayer("Random2")
-        # }
-    ]
+        }]
+    if option == 2:
+        c4_simulations = [{
+            "name": "Random VS Human",
+            "player1": RandomYinshPlayer("Random"),
+            "player2": HumanYinshPlayer("Human")
+        }]
+    if option == 3:
+        c4_simulations = [{
+            "name": "Random VS Random2",
+            "player1": RandomYinshPlayer("Random"),
+            "player2": RandomYinshPlayer("Random2")
+        }]
 
     for sim in c4_simulations:
         run_simulation(sim["name"], YinshSimulator(sim["player1"], sim["player2"]), num_iterations)
