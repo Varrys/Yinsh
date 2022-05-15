@@ -25,9 +25,7 @@ class YinshState(State):
     def __init__(self):
         super().__init__()
 
-        """
-        the grid
-        """
+        # The grid
         self.__grid = [
             [-1, -1, -1, -1, 0, -1, 0, -1, -1, -1, -1],
             [-1, -1, -1, 0, -1, 0, -1, 0, -1, -1, -1],
@@ -35,9 +33,9 @@ class YinshState(State):
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
             [-1, -1, 0, -1, 0, -1, 0, -1, 0, -1, -1],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
-            [1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 0],
+            [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
-            [2, -1, 2, -1, 2, -1, 2, -1, 2, -1, 0],
+            [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
             [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
@@ -51,10 +49,9 @@ class YinshState(State):
         ]
 
         """
-        counts the number of turns in the current game
-        começava a 12..
+        counts the number of turns in the current game        
         """
-        self.__turns_count = 12
+        self.__turns_count = 2
 
         """
         the index of the current acting player
@@ -70,36 +67,41 @@ class YinshState(State):
 
         self.lastActionPos = (8, 8)
 
-        # aqui
-
     def __check_winner(self, player):
-        """# check for 4 up and down
+        # check for 4 up and down
+        bolaPlayer = 5 if player == 1 else 6
         for row in range(0, 19):
             for col in range(0, 11):
-                if self.__grid[row][col] == player and \
-                        self.__grid[row + 1][col] == player and \
-                        self.__grid[row + 2][col] == player and \
-                        self.__grid[row + 3][col] == player:
+                if self.__grid[row][col] == bolaPlayer and \
+                        self.__grid[row + 2][col] == bolaPlayer and \
+                        self.__grid[row + 4][col] == bolaPlayer and \
+                        self.__grid[row + 6][col] == bolaPlayer and \
+                        self.__grid[row + 8][col] == bolaPlayer:
+                    print("O player", bcolors.blue + "Blue" + bcolors.RESET if bolaPlayer == 5 else bcolors.red + 'Red' + bcolors.RESET, "ganhou ")
                     return True
 
         # check upward diagonal
         for row in range(3, 19):
             for col in range(0, 11 - 3):
-                if self.__grid[row][col] == player and \
-                        self.__grid[row - 1][col + 1] == player and \
-                        self.__grid[row - 2][col + 2] == player and \
-                        self.__grid[row - 3][col + 3] == player:
+                if self.__grid[row][col] == bolaPlayer and \
+                        self.__grid[row - 1][col + 1] == bolaPlayer and \
+                        self.__grid[row - 2][col + 2] == bolaPlayer and \
+                        self.__grid[row - 3][col + 3] == bolaPlayer and \
+                        self.__grid[row - 4][col + 4] == bolaPlayer:
+                    print("O player", bcolors.blue + "Blue" + bcolors.RESET if bolaPlayer == 5 else bcolors.red + 'Red' + bcolors.RESET, "ganhou ")
                     return True
 
         # check downward diagonal
         for row in range(0, 19 - 3):
             for col in range(0, 11 - 3):
-                if self.__grid[row][col] == player and \
-                        self.__grid[row + 1][col + 1] == player and \
-                        self.__grid[row + 2][col + 2] == player and \
-                        self.__grid[row + 3][col + 3] == player:
+                if self.__grid[row][col] == bolaPlayer and \
+                        self.__grid[row + 1][col + 1] == bolaPlayer and \
+                        self.__grid[row + 2][col + 2] == bolaPlayer and \
+                        self.__grid[row + 3][col + 3] == bolaPlayer and \
+                        self.__grid[row + 4][col + 4] == bolaPlayer:
+                    print("O player", bcolors.blue + "Blue" + bcolors.RESET if bolaPlayer == 5 else bcolors.red + 'Red' + bcolors.RESET, "ganhou ")
                     return True
-"""
+
         return False
 
     def get_grid(self):
@@ -137,7 +139,6 @@ class YinshState(State):
         if self.__turns_count >= 12 and self.duplaJogada:
             # Não deixa jogar na horizontal
             lastRow, lastCol = self.lastActionPos
-            print(lastRow, row, self.duplaJogada)
             if row == lastRow:
                 return False
             rowDiff = abs(lastRow - row)
@@ -146,23 +147,21 @@ class YinshState(State):
                 return False
 
             # Este pequeno codigo não deixa jogar numa posição se tiver peças 1/2 nessa vertical
-            print(col, lastCol)
             if col == lastCol:
-                print("batatas")
                 if row > lastRow:
                     for i in range(lastRow + 1, row + 1):
-                        print(i)
                         valor = self.__grid[i][col]
-                        print(valor)
                         if valor != self.__acting_player and 0 < valor < 5:
-                            print("arroz")
+                            return False
+                        # Verifica se existe uma peça 5/6 depois verifica se é onde quero jogar e se não for verifica se na linha a seguir existe a peça 5/6
+                        elif valor in [5, 6] and (i + 2) != row and self.__grid[i + 2][col] not in [5, 6]:
                             return False
                 else:
                     for i in reversed(range(row, lastRow)):
                         valor = self.__grid[i][col]
-                        print(valor)
                         if valor != self.__acting_player and 0 < valor < 5:
-                            print("massa")
+                            return False
+                        elif valor in [5, 6] and (i - 2) != row and self.__grid[i - 2][col] not in [5, 6]:
                             return False
 
             # Este pequeno codigo não deixa jogar numa posição se tiver peças 1/2 nessa diagonal
@@ -170,32 +169,28 @@ class YinshState(State):
                 for i in range(lastRow + 1, row + 1, ):
                     rowDiff = abs(lastRow - i)
                     playCol = lastCol + rowDiff if (lastCol - col) < 0 else lastCol - rowDiff
-                    print(i, playCol)
+                    checkCol = playCol + 1 if (lastCol - col) < 0 else playCol - 1
                     valor = self.__grid[i][playCol]
-                    print(playCol)
-                    print("->", valor)
-                    if valor != self.__acting_player and valor != 0:
-                        print("aqui2")
+                    if valor != self.__acting_player and 0 < valor < 5:
+                        return False
+                    elif valor in [5, 6] and (i + 1) != row and self.__grid[i + 1][checkCol] not in [5, 6]:
                         return False
 
             elif row < lastRow and col != lastCol:
                 for i in reversed(range(row, lastRow, )):
                     rowDiff = abs(lastRow - i)
                     playCol = lastCol + rowDiff if (lastCol - col) < 0 else lastCol - rowDiff
-                    print(i, playCol)
+                    checkCol = playCol + 1 if (lastCol - col) < 0 else playCol - 1
                     valor = self.__grid[i][playCol]
-                    print(playCol)
-                    print("->", valor)
-                    if valor != self.__acting_player and valor != 0:
-                        print("aqui3")
+                    if valor != self.__acting_player and 0 < valor < 5:
+                        return False
+                    elif valor in [5, 6] and (i - 1) != row and self.__grid[i - 1][checkCol] not in [5, 6]:
                         return False
         return True
 
     def update(self, action: YinshAction):
         col = action.get_col()
-        print(f"col: {col}")
         row = action.get_row()
-        print(f"row: {row}")
 
         if len(self.lastActionPos) == 2:
             lastRow, lastCol = self.lastActionPos
@@ -206,6 +201,40 @@ class YinshState(State):
             self.__grid[row][col] = self.__acting_player
             self.__grid[lastRow][lastCol] += 2
             self.duplaJogada = False
+            if col == lastCol:
+                if row > lastRow:
+                    for i in range(lastRow + 1, row + 1):
+                        valor = self.__grid[i][col]
+                        if valor == 5:
+                            self.__grid[i][col] = 6
+                        elif valor == 6:
+                            self.__grid[i][col] = 5
+                else:
+                    for i in reversed(range(row, lastRow)):
+                        valor = self.__grid[i][col]
+                        if valor == 5:
+                            self.__grid[i][col] = 6
+                        elif valor == 6:
+                            self.__grid[i][col] = 5
+
+            if row > lastRow and col != lastCol:
+                for i in range(lastRow + 1, row + 1, ):
+                    rowDiff = abs(lastRow - i)
+                    playCol = lastCol + rowDiff if (lastCol - col) < 0 else lastCol - rowDiff
+                    valor = self.__grid[i][playCol]
+                    if valor == 5:
+                        self.__grid[i][playCol] = 6
+                    elif valor == 6:
+                        self.__grid[i][playCol] = 5
+            elif row < lastRow and col != lastCol:
+                for i in reversed(range(row, lastRow, )):
+                    rowDiff = abs(lastRow - i)
+                    playCol = lastCol + rowDiff if (lastCol - col) < 0 else lastCol - rowDiff
+                    valor = self.__grid[i][playCol]
+                    if valor == 5:
+                        self.__grid[i][playCol] = 6
+                    elif valor == 6:
+                        self.__grid[i][playCol] = 5
         else:
             if value == 0:
                 self.__grid[row][col] = self.__acting_player
@@ -228,16 +257,14 @@ class YinshState(State):
 
     def __display_cell(self, row, col):
 
-        # 0-Locais de jogo | #1- Jogador A | #2- Jogador B | #3- Peça Selecionada A | #4- Peça Selecionada B |
-        ##- Locais permitidos para jogar | #5- Peça fixa do jogador A | #6- Peça fixa do jogador B
-        # print(row,col)
+        # 0-Locais de jogo | #1- Jogador azul | #2- Jogador vermelho | #3- Peça Selecionada azul | #4- Peça Selecionada vermelha
+        # 5- Peça fixa do jogador azul | #6- Peça fixa do jogador vermelha
         print({
                   0: bcolors.white + '◦' + bcolors.RESET,
                   1: bcolors.blue + '◯' + bcolors.RESET,
                   2: bcolors.red + '◯' + bcolors.RESET,
                   3: bcolors.blue + '◉' + bcolors.RESET,
                   4: bcolors.red + '◉' + bcolors.RESET,
-                  # 5: bcolors.green + '◎' + bcolors.RESET,
                   5: bcolors.blue + '●' + bcolors.RESET,
                   6: bcolors.red + '●' + bcolors.RESET,
                   YinshState.EMPTY_CELL: ' '
@@ -253,10 +280,6 @@ class YinshState(State):
 
     def display(self):
         self.__display_numbers()
-        # for row in self.__grid:
-        #    print(row)
-        #    print('-'*100)
-        # print(self.jogadaInvalida)
 
         for row in range(0, 19):
             if row < 10:

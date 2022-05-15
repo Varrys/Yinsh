@@ -12,7 +12,7 @@ class RandomYinshPlayer(YinshPlayer):
         super().__init__(name)
 
     def get_action(self, state: YinshState):
-        return YinshAction(randint(0,18),randint(0,10))
+        return YinshAction(randint(0, 10), randint(0, 18))
 
     def event_action(self, pos: int, action, new_state: State):
         # ignore
