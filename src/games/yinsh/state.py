@@ -289,7 +289,10 @@ class YinshState(State):
             for col in range(0, 11):
                 self.__display_cell(row, col)
                 print('   ', end="")
-            print("")
+            if row < 10:
+                print(" ",row)
+            else:
+                print("",row)
 
         self.__display_numbers()
         print("")

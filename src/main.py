@@ -1,18 +1,17 @@
-from games.yinsh.players.minimax import MinimaxYinshPlayer
 from games.yinsh.players.random import RandomYinshPlayer
 from games.yinsh.simulator import YinshSimulator
 from games.game_simulator import GameSimulator
-from src.games.yinsh.players.greedy import GreedyYinshPlayer
 from src.games.yinsh.players.human import HumanYinshPlayer
 
 
 class bcolors:
     green = '\033[32m'
     RESET = '\033[0m'
+    BOLD = '\033[;1m'
 
 
 def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
-    print(f"---------------- {bcolors.green + desc + bcolors.RESET} ----------------")
+    print(f"------------------ {bcolors.green + desc + bcolors.RESET} ------------------")
 
     for i in range(0, iterations):
         simulator.change_player_positions()
@@ -23,7 +22,7 @@ def run_simulation(desc: str, simulator: GameSimulator, iterations: int):
 
 
 def main():
-    print("ESTG IA Games Simulator")
+    print(bcolors.BOLD+"               ESTG IA Yinsh Simulator"+bcolors.RESET)
 
     num_iterations = 1
 
