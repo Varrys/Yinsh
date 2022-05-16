@@ -30,15 +30,15 @@ class YinshState(State):
             [-1, -1, -1, -1, 0, -1, 0, -1, -1, -1, -1],
             [-1, -1, -1, 0, -1, 0, -1, 0, -1, -1, -1],
             [-1, -1, 0, -1, 0, -1, 0, -1, 0, -1, -1],
-            [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
-            [-1, -1, 0, -1, 0, -1, 0, -1, 0, -1, -1],
+            [-1, 5, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+            [-1, -1, 5, -1, 0, -1, 0, -1, 0, -1, -1],
+            [-1, 0, -1, 5, -1, 0, -1, 0, -1, 0, -1],
+            [1, -1, 1, -1, 5, -1, 1, -1, 1, -1, 0],
+            [-1, 0, -1, 0, -1, 1, -1, 0, -1, 0, -1],
+            [2, -1, 2, -1, 0, -1, 2, -1, 2, -1, 0],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
             [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
-            [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
-            [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
-            [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
-            [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
-            [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+            [-1, 0, -1, 0, -1, 0, -1, 2, -1, 0, -1],
             [0, -1, 0, -1, 0, -1, 0, -1, 0, -1, 0],
             [-1, 0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
             [-1, -1, 0, -1, 0, -1, 0, -1, 0, -1, -1],
@@ -51,7 +51,7 @@ class YinshState(State):
         """
         counts the number of turns in the current game        
         """
-        self.__turns_count = 2
+        self.__turns_count = 16
 
         """
         the index of the current acting player
@@ -71,36 +71,52 @@ class YinshState(State):
         # check for 4 up and down
         bolaPlayer = 5 if player == 1 else 6
         for row in range(0, 19):
-            for col in range(0, 11):
-                if self.__grid[row][col] == bolaPlayer and \
-                        self.__grid[row + 2][col] == bolaPlayer and \
-                        self.__grid[row + 4][col] == bolaPlayer and \
-                        self.__grid[row + 6][col] == bolaPlayer and \
-                        self.__grid[row + 8][col] == bolaPlayer:
-                    print("O player", bcolors.blue + "Blue" + bcolors.RESET if bolaPlayer == 5 else bcolors.red + 'Red' + bcolors.RESET, "ganhou ")
-                    return True
+            rowValues = [row + x for x in range(0, 10, 2)]
+            if rowValues.pop() <= 18:
+                for col in range(0, 11):
+                    if self.__grid[row][col] == bolaPlayer and \
+                            self.__grid[row + 2][col] == bolaPlayer and \
+                            self.__grid[row + 4][col] == bolaPlayer and \
+                            self.__grid[row + 6][col] == bolaPlayer and \
+                            self.__grid[row + 8][col] == bolaPlayer:
+                        print("O player",
+                              bcolors.blue + "Blue" + bcolors.RESET if bolaPlayer == 5 else bcolors.red + 'Red' + bcolors.RESET,
+                              "ganhou ")
+                        return True
 
         # check upward diagonal
         for row in range(3, 19):
-            for col in range(0, 11 - 3):
-                if self.__grid[row][col] == bolaPlayer and \
-                        self.__grid[row - 1][col + 1] == bolaPlayer and \
-                        self.__grid[row - 2][col + 2] == bolaPlayer and \
-                        self.__grid[row - 3][col + 3] == bolaPlayer and \
-                        self.__grid[row - 4][col + 4] == bolaPlayer:
-                    print("O player", bcolors.blue + "Blue" + bcolors.RESET if bolaPlayer == 5 else bcolors.red + 'Red' + bcolors.RESET, "ganhou ")
-                    return True
+            rowValues = [row - x for x in range(0, 5)]
+            if rowValues.pop() <= 18:
+                for col in range(0, 11 - 3):
+                    colValues = [col + x for x in range(0, 5)]
+                    if colValues.pop() <= 10:
+                        if self.__grid[row][col] == bolaPlayer and \
+                                self.__grid[row - 1][col + 1] == bolaPlayer and \
+                                self.__grid[row - 2][col + 2] == bolaPlayer and \
+                                self.__grid[row - 3][col + 3] == bolaPlayer and \
+                                self.__grid[row - 4][col + 4] == bolaPlayer:
+                            print("O player",
+                                  bcolors.blue + "Blue" + bcolors.RESET if bolaPlayer == 5 else bcolors.red + 'Red' + bcolors.RESET,
+                                  "ganhou ")
+                            return True
 
         # check downward diagonal
         for row in range(0, 19 - 3):
-            for col in range(0, 11 - 3):
-                if self.__grid[row][col] == bolaPlayer and \
-                        self.__grid[row + 1][col + 1] == bolaPlayer and \
-                        self.__grid[row + 2][col + 2] == bolaPlayer and \
-                        self.__grid[row + 3][col + 3] == bolaPlayer and \
-                        self.__grid[row + 4][col + 4] == bolaPlayer:
-                    print("O player", bcolors.blue + "Blue" + bcolors.RESET if bolaPlayer == 5 else bcolors.red + 'Red' + bcolors.RESET, "ganhou ")
-                    return True
+            rowValues = [row + x for x in range(0, 5)]
+            if rowValues.pop() <= 18:
+                for col in range(0, 11 - 3):
+                    colValues = [col + x for x in range(0, 5)]
+                    if colValues.pop() <= 10:
+                        if self.__grid[row][col] == bolaPlayer and \
+                                self.__grid[row + 1][col + 1] == bolaPlayer and \
+                                self.__grid[row + 2][col + 2] == bolaPlayer and \
+                                self.__grid[row + 3][col + 3] == bolaPlayer and \
+                                self.__grid[row + 4][col + 4] == bolaPlayer:
+                            print("O player",
+                                  bcolors.blue + "Blue" + bcolors.RESET if bolaPlayer == 5 else bcolors.red + 'Red' + bcolors.RESET,
+                                  "ganhou ")
+                            return True
 
         return False
 
@@ -151,7 +167,7 @@ class YinshState(State):
                 if row > lastRow:
                     for i in range(lastRow + 1, row + 1):
                         valor = self.__grid[i][col]
-                        if valor != self.__acting_player and 0 < valor < 5:
+                        if 0 < valor < 5:
                             return False
                         # Verifica se existe uma peça 5/6 depois verifica se é onde quero jogar e se não for verifica se na linha a seguir existe a peça 5/6
                         elif valor in [5, 6] and (i + 2) != row and self.__grid[i + 2][col] not in [5, 6]:
@@ -159,7 +175,7 @@ class YinshState(State):
                 else:
                     for i in reversed(range(row, lastRow)):
                         valor = self.__grid[i][col]
-                        if valor != self.__acting_player and 0 < valor < 5:
+                        if 0 < valor < 5:
                             return False
                         elif valor in [5, 6] and (i - 2) != row and self.__grid[i - 2][col] not in [5, 6]:
                             return False
@@ -171,7 +187,7 @@ class YinshState(State):
                     playCol = lastCol + rowDiff if (lastCol - col) < 0 else lastCol - rowDiff
                     checkCol = playCol + 1 if (lastCol - col) < 0 else playCol - 1
                     valor = self.__grid[i][playCol]
-                    if valor != self.__acting_player and 0 < valor < 5:
+                    if 0 < valor < 5:
                         return False
                     elif valor in [5, 6] and (i + 1) != row and self.__grid[i + 1][checkCol] not in [5, 6]:
                         return False
@@ -182,7 +198,7 @@ class YinshState(State):
                     playCol = lastCol + rowDiff if (lastCol - col) < 0 else lastCol - rowDiff
                     checkCol = playCol + 1 if (lastCol - col) < 0 else playCol - 1
                     valor = self.__grid[i][playCol]
-                    if valor != self.__acting_player and 0 < valor < 5:
+                    if 0 < valor < 5:
                         return False
                     elif valor in [5, 6] and (i - 1) != row and self.__grid[i - 1][checkCol] not in [5, 6]:
                         return False
@@ -290,9 +306,9 @@ class YinshState(State):
                 self.__display_cell(row, col)
                 print('   ', end="")
             if row < 10:
-                print(" ",row)
+                print(" ", row)
             else:
-                print("",row)
+                print("", row)
 
         self.__display_numbers()
         print("")
@@ -320,6 +336,7 @@ class YinshState(State):
         if self.__has_winner:
             return YinshResult.LOOSE if pos == self.__acting_player else YinshResult.WIN
         if self.__is_full():
+            print("Os jogadores empataram!")
             return YinshResult.DRAW
         return None
 

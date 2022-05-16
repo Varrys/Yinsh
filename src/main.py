@@ -26,11 +26,11 @@ def main():
     print(bcolors.BOLD + "               ESTG IA Yinsh Simulator" + bcolors.RESET)
     num_iterations = 1
     option = 0
-    print("1- Human vs Human")
-    print("2- Random vs Human")
-    print("3- Random vs Random2")
+    print(bcolors.green + "1-" + bcolors.RESET + " Human vs Human")
+    print(bcolors.green + "2-" + bcolors.RESET + " Random vs Human")
+    print(bcolors.green + "3-" + bcolors.RESET + " Random vs Random2")
     while option > 3 or option < 1:
-        option = int(input(f"Escolha o tipo de jogo: "))
+        option = int(input("Escolha o tipo de jogo: "))
 
     if option == 1:
         c4_simulations = [{
